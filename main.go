@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"mock-api-go/models"
-	"os"
 	"regexp"
 	"strings"
 
@@ -48,7 +47,7 @@ func initConfig() (*models.Config, error) {
  * initRoute 初始化配置的类
  */
 func initRoute(r *gin.Engine) error {
-	dirs, err := os.ReadDir(API_PATH)
+	dirs, err := ioutil.ReadDir(API_PATH)
 	if err != nil {
 		fmt.Println(err.Error())
 		return err

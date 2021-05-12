@@ -1,0 +1,12 @@
+[{
+    "route": "/ping",
+    "method": "get",
+    "response": {
+        "message": "pong",
+        "data": {
+            "a": 1,
+            "b": 2,
+            "c": 3
+        }
+    }
+}]

@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"flag"
 	"fmt"
 	"io/ioutil"
 	"mock-api-go/models"
@@ -11,43 +12,51 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-const (
-	CONFIG_PATH = "config/config.json"
-	API_PATH    = "api"
-)
+// const (
+// 	CONFIG_PATH = "config/config.json"
+// 	API_PATH    = "api"
+// )
 
+var port string
+var apiPath string
+
+func init() {
+	flag.StringVar(&port, "port", "8080", "启动服务的接口")
+	flag.StringVar(&apiPath, "api-path", "api", "api文件所在的路径")
+
+}
 func main() {
+	flag.Parse()
 	r := gin.Default()
 
 	initRoute(r)
-	config, err := initConfig()
-	if err != nil {
-		return
-	}
-	r.Run(fmt.Sprintf(":%d", config.ListenPort))
-	fmt.Printf("server listen on %d", config.ListenPort)
+	// config, err := initConfig()
+	// if err != nil {
+	// 	return
+	// }
+	r.Run(fmt.Sprintf(":%s", port))
 }
 
 /**
  * initConfig 初始化配置项
  */
-func initConfig() (*models.Config, error) {
-	// 读取配置项
-	config := &models.Config{}
-	json_str, err := ioutil.ReadFile(CONFIG_PATH)
-	if err != nil {
-		fmt.Println(err.Error())
-		return config, err
-	}
-	json.Unmarshal(json_str, config)
-	return config, nil
-}
+// func initConfig() (*models.Config, error) {
+// 	// 读取配置项
+// 	config := &models.Config{}
+// 	json_str, err := ioutil.ReadFile(CONFIG_PATH)
+// 	if err != nil {
+// 		fmt.Println(err.Error())
+// 		return config, err
+// 	}
+// 	json.Unmarshal(json_str, config)
+// 	return config, nil
+// }
 
 /**
  * initRoute 初始化配置的类
  */
 func initRoute(r *gin.Engine) error {
-	dirs, err := ioutil.ReadDir(API_PATH)
+	dirs, err := ioutil.ReadDir(apiPath)
 	if err != nil {
 		fmt.Println(err.Error())
 		return err
@@ -59,7 +68,7 @@ func initRoute(r *gin.Engine) error {
 			continue
 		}
 		tmpRouteSlice := []models.Router{}
-		filePath := fmt.Sprintf("%s/%s", API_PATH, dir.Name())
+		filePath := fmt.Sprintf("%s/%s", apiPath, dir.Name())
 		json_str, err := ioutil.ReadFile(filePath)
 		if err != nil {
 			continue

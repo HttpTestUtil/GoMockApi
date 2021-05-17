@@ -1,9 +1,6 @@
 release: mkdir
-	go release -o build/start
+	go build -o release/mock-api
 
 mkdir:
 	rm -rf ./release
 	mkdir release
-	cp -r api release/api
-	cp -r config release/config
-	cp README.md release/README.md

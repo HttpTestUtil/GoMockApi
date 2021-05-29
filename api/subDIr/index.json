@@ -1,0 +1,11 @@
+[{
+    "route": "/",
+    "method": "get",
+    "response": {
+        "message": "hello world",
+        "data": [
+            "cat",
+            "dog"
+        ]
+    }
+}]

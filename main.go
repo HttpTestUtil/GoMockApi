@@ -38,37 +38,27 @@ func main() {
 }
 
 /**
- * initConfig 初始化配置项
- */
-// func initConfig() (*models.Config, error) {
-// 	// 读取配置项
-// 	config := &models.Config{}
-// 	json_str, err := ioutil.ReadFile(CONFIG_PATH)
-// 	if err != nil {
-// 		fmt.Println(err.Error())
-// 		return config, err
-// 	}
-// 	json.Unmarshal(json_str, config)
-// 	return config, nil
-// }
-
-/**
  * initRoute 初始化配置的类
  */
 func initRoute(r *gin.Engine) error {
-	dirs, err := ioutil.ReadDir(apiPath)
+	// dirs, err := ioutil.ReadDir(apiPath)
+	// if err != nil {
+	// 	fmt.Println(err.Error())
+	// 	return err
+	// }
+	allJsonPath, err := getAlljsonFilePath(apiPath)
 	if err != nil {
 		fmt.Println(err.Error())
 		return err
 	}
-	rex, _ := regexp.Compile(".json$")
-	for _, dir := range dirs {
-		// 如果文件名不对则忽略
-		if !rex.Match([]byte(dir.Name())) {
-			continue
-		}
+
+	for _, filePath := range allJsonPath {
+		// // 如果文件名不对则忽略
+		// if !rex.Match([]byte(dir.Name())) {
+		// 	continue
+		// }
 		tmpRouteSlice := []models.Router{}
-		filePath := fmt.Sprintf("%s/%s", apiPath, dir.Name())
+		// filePath := fmt.Sprintf("%s/%s", apiPath, dir.Name())
 		json_str, err := ioutil.ReadFile(filePath)
 		if err != nil {
 			continue
@@ -91,4 +81,36 @@ func initRoute(r *gin.Engine) error {
 		}
 	}
 	return nil
+}
+
+/**
+ * 递归遍历整个json目录
+ */
+func getAlljsonFilePath(path string) ([]string, error) {
+	dirs, err := ioutil.ReadDir(path)
+	if err != nil {
+		return nil, err
+	}
+	responseStrings := []string{}
+	rex, _ := regexp.Compile(".json$")
+	for _, oneDir := range dirs {
+		// 如果是 json 文件，则拼接文件路径
+		currentPath := fmt.Sprintf("%s/%s", path, oneDir.Name())
+		if rex.Match([]byte(oneDir.Name())) {
+			responseStrings = append(responseStrings, currentPath)
+			continue
+		}
+		// 如果是文件夹，则递归寻找相关文件
+		if oneDir.IsDir() {
+			var tmpResponse []string
+			tmpResponse, err = getAlljsonFilePath(currentPath)
+			fmt.Println(tmpResponse)
+			if err != nil {
+				return nil, err
+			}
+			responseStrings = append(responseStrings, tmpResponse...)
+			continue
+		}
+	}
+	return responseStrings, nil
 }

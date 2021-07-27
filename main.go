@@ -59,24 +59,27 @@ func initRoute(r *gin.Engine) error {
 		// }
 		tmpRouteSlice := []models.Router{}
 		// filePath := fmt.Sprintf("%s/%s", apiPath, dir.Name())
+		fmt.Println(filePath)
 		json_str, err := ioutil.ReadFile(filePath)
 		if err != nil {
 			continue
 		}
 		json.Unmarshal(json_str, &tmpRouteSlice)
-		fmt.Print(tmpRouteSlice)
-		for _, routerData := range tmpRouteSlice {
 
-			switch strings.ToLower(routerData.Method) {
-			case models.METHOD_GET:
-				r.GET(routerData.Route, func(c *gin.Context) {
-					c.JSON(200, routerData.Response)
-				})
-			case models.METHOD_POST:
-				r.POST(routerData.Route, func(c *gin.Context) {
-					c.JSON(200, routerData.Response)
-				})
-			}
+		for _, routerData := range tmpRouteSlice {
+			// fmt.Print(routerData.Response)
+			(func(method string, route string, response map[string]interface{}) {
+				switch strings.ToLower(method) {
+				case models.METHOD_GET:
+					r.GET(route, func(c *gin.Context) {
+						c.JSON(200, response)
+					})
+				case models.METHOD_POST:
+					r.POST(route, func(c *gin.Context) {
+						c.JSON(200, response)
+					})
+				}
+			})(routerData.Method, routerData.Route, routerData.Response)
 
 		}
 	}
